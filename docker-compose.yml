@@ -16,74 +16,76 @@ services:
                 aliases: 
                     - redis_net
 
-    mongo:
-        container_name: mongo
-        build: ./mongo
-        restart: always
-        environment:
-            # ${DB_PASSWORD} берем либо из окружения, либо из
-            # .env-файла (создавать директории с docker-compose.yml)
-            MONGO_ROOT_PASSWORD: ${DB_PASSWORD}
-        ports:
-            - "27017:27017" # дефолтные порты mongo
-        networks:
-            golovin:
-                aliases:
-                    - mongo_net
+#    mongo:
+#        container_name: mongo
+#        build: ./mongo
+#        restart: always
+#        environment:
+#            # ${DB_PASSWORD} берем либо из окружения, либо из
+#            # .env-файла (создавать директории с docker-compose.yml)
+#            MONGO_ROOT_PASSWORD: ${DB_PASSWORD}
+#        ports:
+#            - "27017:27017" # дефолтные порты mongo
+#        networks:
+#            golovin:
+#                aliases:
+#                    - mongo_net
 
-    neo4j:
-        container_name: neo4j
-        build: ./neo4j
-        restart: always
-        environment:
-            # ${DB_PASSWORD} берем либо из окружения, либо из
-            # .env-файла (создавать директории с docker-compose.yml)
-            NEO4J_ROOT_PASSWORD: ${DB_PASSWORD}
-        ports:
-            - "7474:7474" # дефолтные порты neo4j для HTTP
-            - "7473:7473" # дефолтные порты neo4j для HTTPS
-        networks:
-            golovin:
-                aliases:
-                    - neo4j_net
+#    neo4j:
+#        container_name: neo4j
+#        build: ./neo4j
+#        restart: always
+#        environment:
+#            # ${DB_PASSWORD} берем либо из окружения, либо из
+#            # .env-файла (создавать директории с docker-compose.yml)
+#            NEO4J_ROOT_PASSWORD: ${DB_PASSWORD}
+#        ports:
+#            - "7474:7474" # дефолтные порты neo4j для HTTP
+#            - "7473:7473" # дефолтные порты neo4j для HTTPS
+#        networks:
+#            golovin:
+#                aliases:
+#                    - neo4j_net
+#
+#    ms:
+#        container_name: ms
+#        build: ./ms
+#        restart: always
+#        environment:
+#            # ${DB_PASSWORD} берем либо из окружения, либо из
+#            # .env-файла (создавать директории с docker-compose.yml)
+#            MS_ROOT_PASSWORD: ${DB_PASSWORD}
+#        ports:
+#            - "1433:1433" # дефолтные порты Microsoft SQL Server
+#        networks:
+#            golovin:
+#                aliases:
+#                    - ms_net
 
-    ms:
-        container_name: ms
-        build: ./ms
-        restart: always
-        environment:
-            # ${DB_PASSWORD} берем либо из окружения, либо из
-            # .env-файла (создавать директории с docker-compose.yml)
-            MS_ROOT_PASSWORD: ${DB_PASSWORD}
-        ports:
-            - "1433:1433" # дефолтные порты Microsoft SQL Server
-        networks:
-            golovin:
-                aliases:
-                    - ms_net
-
-    elastic:
-        container_name: elastic
-        build: ./elastic
-        restart: always
-        ports:
-            - "9300:9300" # дефолтные порты ElasticSearch (для HTTPS)
-            - "9200:9200" # дефолтные порты ElasticSearch (для HTTP)
-        # зависимость от других сервисов
-        depends_on:
-          - redis
-          - mongo
-          - neo4j
-          - ms
-        links:
-          - redis
-          - mongo
-          - neo4j
-          - ms
-        networks:
-            golovin:
-                aliases:
-                    - elastic_net
+#    elastic:
+#        container_name: elastic
+#        build: ./elastic
+#        restart: always
+#        environment:
+#            "discovery.type": "single-node"
+#        ports:
+#            - "9300:9300" # дефолтные порты ElasticSearch (для HTTPS)
+#            - "9200:9200" # дефолтные порты ElasticSearch (для HTTP)
+#        # зависимость от других сервисов
+#        depends_on:
+#          - redis
+#          - mongo
+#          - neo4j
+#          - ms
+#        links:
+#          - redis
+#          - mongo
+#          - neo4j
+#          - ms
+#        networks:
+#            golovin:
+#                aliases:
+#                    - elastic_net
 
     app:
         build: ./app
@@ -92,10 +94,8 @@ services:
         tty: true
         stdin_open: true
         volumes:
+            - ${PWD}/app/repository:/var/www/app
             - ./app/conf.d:/etc/nginx/conf.d
-            - type: bind
-              source: ${PWD}/app/repository/.env
-              target: /var/www/app/.env
             - type: bind
               source: ${PWD}/app/logs/access.log
               target: /var/log/nginx/access.log
@@ -114,20 +114,20 @@ services:
         # зависимость от других сервисов
         depends_on:
             - redis
-            - mongo
-            - neo4j
-            - ms
-            - elastic
+#            - mongo
+#            - neo4j
+#            - ms
+#            - elastic
         links:
             - redis
-            - mongo
-            - neo4j
-            - ms
-            - elastic
+#            - mongo
+#            - neo4j
+#            - ms
+#            - elastic
         networks:
-            backend:
+            golovin:
                 aliases: 
                     - app_net
 
 networks: 
-    backend:
+    golovin:
