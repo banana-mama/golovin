@@ -10,10 +10,10 @@ services:
 #            - type: bind
 #              source: ${PWD}/redis/conf.d/redis.conf
 #              target: /usr/local/etc/redis/redis.conf
-        environment:
-            # ${DB_PASSWORD} берем либо из окружения, либо из
-            # .env-файла (создавать директории с docker-compose.yml)
-            REDIS_ROOT_PASSWORD: ${DB_PASSWORD}
+#        environment:
+#            # ${DB_PASSWORD} берем либо из окружения, либо из
+#            # .env-файла (создавать директории с docker-compose.yml)
+#            REDIS_ROOT_PASSWORD: ${DB_PASSWORD}
         ports:
             - "6379:6379" # дефолтные порты redis'а
         networks: 
@@ -22,20 +22,25 @@ services:
                 aliases: 
                     - redis_net
 
-#    mongo:
-#        container_name: mongo
-#        build: ./mongo
-#        restart: always
-#        environment:
-#            # ${DB_PASSWORD} берем либо из окружения, либо из
-#            # .env-файла (создавать директории с docker-compose.yml)
-#            MONGO_ROOT_PASSWORD: ${DB_PASSWORD}
-#        ports:
-#            - "27017:27017" # дефолтные порты mongo
-#        networks:
-#            golovin:
-#                aliases:
-#                    - mongo_net
+    mongo:
+        container_name: mongo
+        build: ./mongo
+        restart: always
+        volumes:
+          - ${PWD}/mongo/data:/etc/mongo
+        environment:
+            # ${DB_PASSWORD} берем либо из окружения, либо из
+            # .env-файла (создавать директории с docker-compose.yml)
+            MONGO_INITDB_DATABASE: golovin
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+        ports:
+            - "27017:27017" # дефолтные порты mongo
+        networks:
+            golovin:
+                ipv4_address: 172.19.0.15
+                aliases:
+                    - mongo_net
 
 #    neo4j:
 #        container_name: neo4j
@@ -123,13 +128,13 @@ services:
         # зависимость от других сервисов
         depends_on:
             - redis
-#            - mongo
+            - mongo
 #            - neo4j
 #            - ms
 #            - elastic
         links:
             - redis
-#            - mongo
+            - mongo
 #            - neo4j
 #            - ms
 #            - elastic

@@ -41,3 +41,5 @@ display_startup_errors = off
 
 ; REDIS
 extension=redis.so
+; MONGO
+extension=mongodb.so
