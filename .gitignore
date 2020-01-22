@@ -1,1 +1,9 @@
-.idea
+*
+.idea/
+!*/
+!.gitignore
+!.gitmodules
+!*.example
+!*.yml
+!*.sh
+!Dockerfile

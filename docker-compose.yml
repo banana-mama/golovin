@@ -5,6 +5,11 @@ services:
         container_name: redis
         build: ./redis
         restart: always
+        volumes:
+            - ${PWD}/redis/data:/data
+#            - type: bind
+#              source: ${PWD}/redis/conf.d/redis.conf
+#              target: /usr/local/etc/redis/redis.conf
         environment:
             # ${DB_PASSWORD} берем либо из окружения, либо из
             # .env-файла (создавать директории с docker-compose.yml)
@@ -13,6 +18,7 @@ services:
             - "6379:6379" # дефолтные порты redis'а
         networks: 
             golovin:
+                ipv4_address: 172.19.0.10
                 aliases: 
                     - redis_net
 
@@ -97,6 +103,9 @@ services:
             - ${PWD}/app/repository:/var/www/app
             - ./app/conf.d:/etc/nginx/conf.d
             - type: bind
+              source: ${PWD}/app/php.ini
+              target: /usr/local/etc/php/conf.d/40-custom.ini
+            - type: bind
               source: ${PWD}/app/logs/access.log
               target: /var/log/nginx/access.log
             - type: bind
@@ -126,7 +135,8 @@ services:
 #            - elastic
         networks:
             golovin:
-                aliases: 
+                ipv4_address: 172.19.0.5
+                aliases:
                     - app_net
 
 networks: 
