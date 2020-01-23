@@ -18,7 +18,7 @@ services:
             - "6379:6379" # дефолтные порты redis'а
         networks: 
             golovin:
-                ipv4_address: 172.19.0.10
+#                ipv4_address: 172.19.0.10
                 aliases: 
                     - redis_net
 
@@ -31,14 +31,14 @@ services:
         environment:
             # ${DB_PASSWORD} берем либо из окружения, либо из
             # .env-файла (создавать директории с docker-compose.yml)
-            MONGO_INITDB_DATABASE: golovin
+#            MONGO_INITDB_DATABASE: golovin
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
         ports:
             - "27017:27017" # дефолтные порты mongo
         networks:
             golovin:
-                ipv4_address: 172.19.0.15
+#                ipv4_address: 172.19.0.15
                 aliases:
                     - mongo_net
 
@@ -140,9 +140,10 @@ services:
 #            - elastic
         networks:
             golovin:
-                ipv4_address: 172.19.0.5
+#                ipv4_address: 172.19.0.5
                 aliases:
                     - app_net
 
 networks: 
     golovin:
+        external: true

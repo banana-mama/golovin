@@ -33,8 +33,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN pecl install redis
 
 # MONGO
-RUN pecl install mongodb
 RUN apt-get install -y libcurl4-openssl-dev pkg-config libssl-dev
+RUN pecl install mongodb
 
 #ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
 
