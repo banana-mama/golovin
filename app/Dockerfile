@@ -1,4 +1,4 @@
-FROM php:7.3-fpm
+FROM php:7.1-fpm
 
 # BASE
 
@@ -35,6 +35,10 @@ RUN pecl install redis
 # MONGO
 RUN apt-get install -y libcurl4-openssl-dev pkg-config libssl-dev
 RUN pecl install mongodb
+
+# NEO4J
+#RUN apt-get install software-properties-common
+RUN docker-php-ext-install bcmath
 
 #ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
 

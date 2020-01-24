@@ -42,22 +42,33 @@ services:
                 aliases:
                     - mongo_net
 
-#    neo4j:
-#        container_name: neo4j
-#        build: ./neo4j
-#        restart: always
-#        environment:
+    neo4j:
+        container_name: neo4j
+        build: ./neo4j
+        restart: always
+        environment:
 #            # ${DB_PASSWORD} берем либо из окружения, либо из
 #            # .env-файла (создавать директории с docker-compose.yml)
-#            NEO4J_ROOT_PASSWORD: ${DB_PASSWORD}
-#        ports:
-#            - "7474:7474" # дефолтные порты neo4j для HTTP
-#            - "7473:7473" # дефолтные порты neo4j для HTTPS
-#        networks:
-#            golovin:
-#                aliases:
-#                    - neo4j_net
-#
+##            NEO4J_ROOT_PASSWORD: ${DB_PASSWORD}
+            NEO4J_AUTH: none
+#        volumes:
+#            - ${PWD}/neo4j/conf:/conf
+#            - ${PWD}/neo4j/data:/data
+#            - ${PWD}/neo4j/import:/import
+#            - ${PWD}/neo4j/logs:/logs
+#            - ${PWD}/neo4j/metrics:/metrics
+#            - ${PWD}/neo4j/plugins:/plugins
+#            - ${PWD}/neo4j/ssl:/ssl
+        ports:
+            - "7474:7474" # дефолтные порты neo4j для HTTP
+            - "7473:7473" # дефолтные порты neo4j для HTTPS
+            - "7687:7687" # дефолтные порты neo4j для Bolt
+        networks:
+            golovin:
+#                ipv4_address: 172.19.0.20
+                aliases:
+                    - neo4j_net
+
 #    ms:
 #        container_name: ms
 #        build: ./ms
@@ -129,13 +140,13 @@ services:
         depends_on:
             - redis
             - mongo
-#            - neo4j
+            - neo4j
 #            - ms
 #            - elastic
         links:
             - redis
             - mongo
-#            - neo4j
+            - neo4j
 #            - ms
 #            - elastic
         networks:
