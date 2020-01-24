@@ -67,7 +67,7 @@ class DBneo4j extends DB
   public function read(array $filter): array
   {
     $query = '
-              MATCH (worker ' . $this->makeMATCH($filter) . ')
+              MATCH (worker:' . $this->label . ' ' . $this->makeMATCH($filter) . ')
               RETURN worker
               ';
 
@@ -94,6 +94,22 @@ class DBneo4j extends DB
 
 
   /**
+   * @return array
+   */
+  public function readAllRelations(): array
+  {
+    $query = '
+              MATCH (workerFrom:' . $this->label . ')-[relation]->(workerTo:' . $this->label . ')
+              RETURN workerFrom, relation, workerTo
+              ';
+
+    $result = $this->client->run($query);
+    $result = $result->getRecords();
+    return $this->handleRecords($result);
+  }
+
+
+  /**
    * @param  array  $filter
    * @param  array  $update
    *
@@ -102,7 +118,7 @@ class DBneo4j extends DB
   public function update(array $filter, array $update): bool
   {
     $query = '
-              MATCH (worker ' . $this->makeMATCH($filter) . ')
+              MATCH (worker:' . $this->label . ' ' . $this->makeMATCH($filter) . ')
               SET ' . $this->makeSET('worker', $update) . '
               RETURN worker
               ';
@@ -121,7 +137,7 @@ class DBneo4j extends DB
   public function delete(array $filter): bool
   {
     $query = '
-              MATCH (worker ' . $this->makeMATCH($filter) . ')
+              MATCH (worker:' . $this->label . ' ' . $this->makeMATCH($filter) . ')
               DETACH DELETE worker
               ';
 
@@ -140,8 +156,8 @@ class DBneo4j extends DB
   public function createRelation(array $from, array $to, $type = 'OBEYS'): bool
   {
     $query = '
-              MATCH (workerFrom ' . $this->makeMATCH($from) . ')
-              MATCH (workerTo ' . $this->makeMATCH($to) . ')
+              MERGE (workerFrom:' . $this->label . ' ' . $this->makeMATCH($from) . ')
+              MERGE (workerTo:' . $this->label . ' ' . $this->makeMATCH($to) . ')
               MERGE (workerFrom)-[:' . $type . ']->(workerTo)
               ';
     $result = $this->client->run($query);
@@ -159,8 +175,8 @@ class DBneo4j extends DB
   public function deleteRelation(array $from, array $to, $type = 'OBEYS'): bool
   {
     $query = '
-              MATCH (workerFrom ' . $this->makeMATCH($from) . ')
-              MATCH (workerTo ' . $this->makeMATCH($to) . ')
+              MATCH (workerFrom:' . $this->label . ' ' . $this->makeMATCH($from) . ')
+              MATCH (workerTo:' . $this->label . ' ' . $this->makeMATCH($to) . ')
               MATCH (workerFrom)-[relation:' . $type . ']->(workerTo)
               DELETE relation
               ';
@@ -174,7 +190,7 @@ class DBneo4j extends DB
    */
   public function deleteAll(): void
   {
-    $this->client->run('MATCH (workers) DETACH DELETE workers');
+    $this->client->run('MATCH (workers:' . $this->label . ') DETACH DELETE workers');
   }
 
 
