@@ -82,20 +82,21 @@ class DBmongo extends DB
    * @param  int|null  $ID
    * @param  array     $filter
    * @param  string    $collection
+   * @param  boolean   $handleResult
    *
    * @throws
-   * @return stdClass[]
+   * @return array[]
    */
-  public function read(?int $ID = null, array $filter = [], string $collection = 'collection'): array
+  public function read(?int $ID = null, array $filter = [], string $collection = 'collection', bool $handleResult = false): array
   {
     $database = implode('.', [$this->database, $collection]);
 
     if ($ID) $filter[self::ID_KEY] = $ID;
     $query = new Query($this->handleFilter($filter));
     $result = $this->manager->executeQuery($database, $query);
-    $result = $result->toArray();
 
-    return $result;
+    $result = $result->toArray();
+    return $this->handleResult($result, $handleResult);
   }
 
 
@@ -152,13 +153,14 @@ class DBmongo extends DB
 
 
   /**
-   * @param  string  $collection
+   * @param  string   $collection
+   * @param  boolean  $handleResult
    *
    * @return null|stdClass[]
    */
-  public function readAll(string $collection = 'collection'): ?array
+  public function readAll(string $collection = 'collection', bool $handleResult = false): ?array
   {
-    return $this->read(null, [], $collection);
+    return $this->read(null, [], $collection, $handleResult);
   }
 
 
@@ -234,6 +236,29 @@ class DBmongo extends DB
   {
     foreach ($filter as $key => &$value) $value = (string)$value;
     return $filter;
+  }
+
+
+  /**
+   * @param  array    $result
+   * @param  boolean  $handleResult
+   *
+   * @return array
+   */
+  private function handleResult(array $result, bool $handleResult = false): array
+  {
+    foreach ($result as &$item) {
+      $item = (array)$item;
+
+      if ($handleResult) {
+        if (isset($item[self::ID_KEY])) {
+          $item = (['id' => $item[self::ID_KEY]] + $item);
+          unset($item[self::ID_KEY]);
+        }
+      }
+
+    }
+    return $result;
   }
 
 
