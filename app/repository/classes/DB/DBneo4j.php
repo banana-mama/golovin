@@ -78,6 +78,22 @@ class DBneo4j extends DB
 
 
   /**
+   * @return array
+   */
+  public function readAll(): array
+  {
+    $query = '
+              MATCH (workers:' . $this->label . ')
+              RETURN workers
+              ';
+
+    $result = $this->client->run($query);
+    $result = $result->getRecords();
+    return $this->handleRecords($result);
+  }
+
+
+  /**
    * @param  array  $filter
    * @param  array  $update
    *
@@ -108,7 +124,57 @@ class DBneo4j extends DB
               MATCH (worker ' . $this->makeMATCH($filter) . ')
               DETACH DELETE worker
               ';
+
+    $result = $this->client->run($query);
     return true;
+  }
+
+
+  /**
+   * @param  array   $from
+   * @param  array   $to
+   * @param  string  $type
+   *
+   * @return bool
+   */
+  public function createRelation(array $from, array $to, $type = 'OBEYS'): bool
+  {
+    $query = '
+              MATCH (workerFrom ' . $this->makeMATCH($from) . ')
+              MATCH (workerTo ' . $this->makeMATCH($to) . ')
+              MERGE (workerFrom)-[:' . $type . ']->(workerTo)
+              ';
+    $result = $this->client->run($query);
+    return true;
+  }
+
+
+  /**
+   * @param  array   $from
+   * @param  array   $to
+   * @param  string  $type
+   *
+   * @return bool
+   */
+  public function deleteRelation(array $from, array $to, $type = 'OBEYS'): bool
+  {
+    $query = '
+              MATCH (workerFrom ' . $this->makeMATCH($from) . ')
+              MATCH (workerTo ' . $this->makeMATCH($to) . ')
+              MATCH (workerFrom)-[relation:' . $type . ']->(workerTo)
+              DELETE relation
+              ';
+    $result = $this->client->run($query);
+    return true;
+  }
+
+
+  /**
+   * @return void
+   */
+  public function deleteAll(): void
+  {
+    $this->client->run('MATCH (workers) DETACH DELETE workers');
   }
 
 
@@ -143,12 +209,11 @@ class DBneo4j extends DB
   }
 
 
-  /**
-   * @return void
-   */
-  public function deleteAll(): void
+  private function handleRecords(array $records): array
   {
-    $this->client->run('MATCH (workers) DETACH DELETE workers');
+    return $records;
+    $items = [];
+    return $items;
   }
 
 
