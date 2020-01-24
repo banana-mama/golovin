@@ -129,6 +129,13 @@ use GraphAware\Bolt\Record\RecordView;
 
     </section>
 
+    <section>
+
+        <h2>Описания</h2>
+
+
+
+    </section>
 
 </section>
 </body>

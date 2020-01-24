@@ -100,15 +100,7 @@ if ($_POST) {
 }
 
 $workersList = $mongo->readAll($collection, true);
-
-//$allWorkers = $neo4j->readAll();
 $workersRelations = $neo4j->readAllRelations();
-//foreach ($workersRelations as $workersRelation) {
-//  echo '<pre>';
-//  print_r($workersRelation->values()[1]->type());
-//  echo '</pre>';
-//}
-//exit();
 
 /* *** */
 
