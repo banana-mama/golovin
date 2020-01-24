@@ -1,11 +1,14 @@
 <?php
 
 use GraphAware\Bolt\Record\RecordView;
+use classes\DB\DBredis;
 
 
 /**
  * @var array[]      $workersList
  * @var RecordView[] $workersRelations
+ * @var string[]     $descriptions
+ * @var DBredis      $redis
  */
 ?>
 
@@ -87,7 +90,7 @@ use GraphAware\Bolt\Record\RecordView;
 
     <section>
 
-        <h2>Отношения</h2>
+        <h2>Отношения (neo4j)</h2>
 
       <?php foreach ($workersRelations as $workersRelation): ?>
           <form method="POST">
@@ -131,9 +134,46 @@ use GraphAware\Bolt\Record\RecordView;
 
     <section>
 
-        <h2>Описания</h2>
+        <h2>Описания (redis)</h2>
 
+        <table>
+            <tr>
+                <th>Ключ</th>
+                <th>Описание</th>
+                <th>Действие</th>
+                <td></td>
+            </tr>
+          <?php foreach ($descriptions as $description): ?>
+              <form method="POST">
+                  <tr>
+                      <td style="text-align: center;"><?= $description ?></td>
+                      <td><textarea name="value"><?= $redis->read($description) ?></textarea></td>
+                      <td>
+                          <input type="hidden" name="key" value="<?= $description ?>">
+                          <select name="type">
+                              <option value="redis__update">Обновить</option>
+                              <option value="redis__delete">Удалить</option>
+                          </select>
+                      </td>
+                      <td>
+                          <button>Выполнить</button>
+                      </td>
+                  </tr>
+              </form>
+          <?php endforeach; ?>
 
+            <form method="POST">
+                <tr>
+                    <th><input type="text" name="key"></th>
+                    <td><textarea name="value"></textarea></td>
+                    <td colspan="2" style="text-align: center;">
+                        <input type="hidden" name="type" value="redis__create">
+                        <button>Добавить</button>
+                    </td>
+                </tr>
+            </form>
+
+        </table>
 
     </section>
 

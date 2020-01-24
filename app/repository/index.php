@@ -92,7 +92,25 @@ if ($_POST) {
         case 'delete':
           $neo4j->deleteRelation(['id' => $_POST['from-id']], ['id' => $_POST['to-id']], $_POST['relation-type']);
           break;
-          
+
+      }
+      break;
+
+    case 'redis':
+      switch ($regExpResult['type']) {
+
+        case 'create':
+          $redis->create($_POST['key'], $_POST['value']);
+          break;
+
+        case 'update':
+          $redis->update($_POST['key'], $_POST['value']);
+          break;
+
+        case 'delete':
+          $redis->delete($_POST['key']);
+          break;
+
       }
       break;
 
@@ -101,6 +119,7 @@ if ($_POST) {
 
 $workersList = $mongo->readAll($collection, true);
 $workersRelations = $neo4j->readAllRelations();
+$descriptions = $redis->getKeys();
 
 /* *** */
 
