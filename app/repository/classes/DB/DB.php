@@ -1,5 +1,7 @@
 <?php
 
+namespace classes\DB;
+
 
 abstract class DB
 {
@@ -17,12 +19,14 @@ abstract class DB
    * @param  integer  $port
    * @param  string   $IP
    */
-  abstract function __construct(int $port, string $IP = '172.19.0.1');
-
-
-  abstract function create();
-  abstract function update();
-  abstract function get();
+//  abstract function __construct(int $port, string $IP = '172.19.0.1');
+//
+//
+//  abstract public function create();
+//  abstract public function read();
+//  abstract public function update();
+//  abstract public function delete();
+//  abstract protected function exists();
 
 
 }
