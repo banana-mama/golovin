@@ -16,18 +16,16 @@ require_once 'vendor/autoload.php';
 use classes\DB\DBredis;
 use classes\DB\DBmongo;
 
+
 ### Redis
 $redis = new DBredis(6379);
 
-### MONGO
+### Mongo
 $mongo = new DBmongo(27017, 'golovin');
 $collection = 'workers';
-echo '<pre>';
-print_r($mongo->readAll($collection));
-echo '</pre>';
-echo '<pre>';
-print_r($mongo->getStatistic());
-echo '</pre>';
-echo '<pre>';
-print_r($mongo->getCollectionsList());
-echo '</pre>';
+
+### Neo4j
+$neo4j = new \classes\DB\DBneo4j(7687);
+
+### frontend
+require_once('./frontend.php');

@@ -17,7 +17,7 @@ class DBredis extends DB
 
 
   /**
-   * DB constructor.
+   * DBredis constructor.
    *
    * @param  integer  $port
    * @param  string   $IP

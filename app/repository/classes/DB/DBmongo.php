@@ -36,7 +36,7 @@ class DBmongo extends DB
 
 
   /**
-   * DB constructor.
+   * DBmongo constructor.
    *
    * @param  integer  $port
    * @param  string   $database  Название базы данных.

@@ -115,9 +115,7 @@ echo '<pre>';
 print_r($testResult);
 echo '</pre>';
 
-$command = new MongoDB\Driver\Command(['listDatabases' => 1]);
-$cursor = $mongoDBmanager->executeCommand('admin', $command);
-$cursorResult = $cursor->toArray()[0];
+ltk
 echo '<pre>';
 print_r($cursorResult);
 echo '</pre>';

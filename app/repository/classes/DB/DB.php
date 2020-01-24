@@ -10,7 +10,7 @@ abstract class DB
   /**
    * @var null|mixed $DB
    */
-  private $DB = null;
+//  protected $DB = null;
 
 
   /**
