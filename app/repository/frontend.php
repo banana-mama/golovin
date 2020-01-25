@@ -40,8 +40,18 @@ use classes\DB\DBredis;
               <?php if (($key === 'id') && ($value > $maxID)) $maxID = $value; ?>
                 <form method="POST">
                     <tr>
-                        <th><input type="text" name="new_key" value="<?= $key ?>"></th>
-                        <td><input type="text" name="value" value="<?= $value ?>"></td>
+                        <th>
+                            <input type="text" name="new_key" value="<?= $key ?>">
+                          <?php if ($redis->isExists('desc__' . $key)): ?>
+                              <p title="<?= $redis->read('desc__' . $key) ?>">читать описание...</p>
+                          <?php endif; ?>
+                        </th>
+                        <td>
+                            <input type="text" name="value" value="<?= $value ?>">
+                          <?php if ($redis->isExists('val__' . $value)): ?>
+                              <p title="<?= $redis->read('val__' . $value) ?>">читать описание...</p>
+                          <?php endif; ?>
+                        </td>
                         <td>
                             <input type="hidden" name="old_key" value="<?= $key ?>">
                             <input type="hidden" name="id" value="<?= $worker['id'] ?>">

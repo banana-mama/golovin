@@ -102,7 +102,7 @@ class DBredis extends DB
    *
    * @return bool
    */
-  protected function isExists(string $key): bool
+  public function isExists(string $key): bool
   {
     return $this->redis->exists($key);
   }
