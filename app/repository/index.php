@@ -21,6 +21,32 @@ use classes\DB\DBneo4j;
 ### Redis
 $redis = new DBredis(6379);
 
+$host = '172.19.0.1';
+$database = 'app';
+$user = 'root';
+$password = 'secret';
+$charset = 'utf8';
+
+$options = [
+  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, ### как будем обрабатывать ошибки
+  PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+  PDO::ATTR_EMULATE_PREPARES => false ### где "подготавливаем" запросы (PDO или натив)
+];
+
+$dsn = "mysql:host=$host;dbname=$database;charset=$charset";
+$pdo = new PDO($dsn, $user, $password, $options);
+
+function updateRedisCache($redis, $pdo) {
+  foreach ($redis->getKeys() as $key) {
+    $redis->delete($key);
+  }
+  $query = 'SELECT * FROM `handbook`;';
+  $handbook = $pdo->query($query)->fetchAll(PDO::FETCH_UNIQUE);
+  foreach ($handbook as $id => $data) {
+    $redis->create(('desc__' . $data['key']), $data['description']);
+  }
+}
+
 ### Mongo
 $mongo = new DBmongo(27017, 'golovin');
 $collection = 'workers';
@@ -114,11 +140,51 @@ if ($_POST) {
       }
       break;
 
+    case 'mysql':
+      switch ($regExpResult['type']) {
+
+        case 'create':
+          $query = 'INSERT INTO `handbook` (`key`, `description`) VALUES(\'' . $_POST['key'] . '\', \'' . $_POST['value'] . '\');';
+          $handbook = $pdo->query($query)->fetch();
+          updateRedisCache($redis, $pdo);
+          break;
+
+        case 'update':
+          $query = ('UPDATE `handbook` SET `description` = \'' . $_POST['value'] . '\' WHERE `key` = \'' . $_POST['key'] . '\';');
+          $handbook = $pdo->query($query)->fetch();
+          updateRedisCache($redis, $pdo);
+          break;
+
+        case 'delete':
+          $query = ('DELETE FROM `handbook` WHERE `key` = \'' . $_POST['key'] . '\';');
+          $handbook = $pdo->query($query)->fetch();
+          updateRedisCache($redis, $pdo);
+          break;
+
+      }
+      break;
+
   }
 }
 
 $workersList = $mongo->readAll($collection, true);
 $workersRelations = $neo4j->readAllRelations();
+
+
+//foreach ($redis->getKeys() as $key) {
+//  $redis->delete($key);
+//}
+$query = 'SELECT * FROM `handbook`;';
+$handbook = $pdo->query($query)->fetchAll(PDO::FETCH_UNIQUE);
+//updateRedisCache($redis, $pdo);
+//foreach ($handbook as $id => $data) {
+//  $redis->create(('desc__' . $data['key']), $data['description']);
+//}
+//echo '<pre>';
+//print_r($handbook);
+//echo '</pre>';
+//exit();
+
 $descriptions = $redis->getKeys();
 
 /* *** */

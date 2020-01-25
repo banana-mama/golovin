@@ -144,6 +144,51 @@ use classes\DB\DBredis;
 
     <section>
 
+        <h2>Описания (MySQL)</h2>
+
+        <table>
+            <tr>
+                <th>Ключ</th>
+                <th>Описание</th>
+                <th>Действие</th>
+                <td></td>
+            </tr>
+          <?php foreach ($handbook as $id => $data): ?>
+              <form method="POST">
+                  <tr>
+                      <td style="text-align: center;"><?= $data['key'] ?></td>
+                      <td><textarea name="value"><?= $data['description'] ?></textarea></td>
+                      <td>
+                          <input type="hidden" name="key" value="<?= $data['key'] ?>">
+                          <select name="type">
+                              <option value="mysql__update">Обновить</option>
+                              <option value="mysql__delete">Удалить</option>
+                          </select>
+                      </td>
+                      <td>
+                          <button>Выполнить</button>
+                      </td>
+                  </tr>
+              </form>
+          <?php endforeach; ?>
+
+            <form method="POST">
+                <tr>
+                    <th><input type="text" name="key"></th>
+                    <td><textarea name="value"></textarea></td>
+                    <td colspan="2" style="text-align: center;">
+                        <input type="hidden" name="type" value="mysql__create">
+                        <button>Добавить</button>
+                    </td>
+                </tr>
+            </form>
+
+        </table>
+
+    </section>
+
+    <section>
+
         <h2>Описания (redis)</h2>
 
         <table>

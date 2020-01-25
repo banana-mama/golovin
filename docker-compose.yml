@@ -69,6 +69,25 @@ services:
                 aliases:
                     - neo4j_net
 
+    mysql:
+        container_name: mysql
+        build: ./mysql
+        restart: always
+        environment:
+            MYSQL_DATABASE: app
+#            MYSQL_USER: root
+            MYSQL_ROOT_PASSWORD: secret
+#            MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        ports:
+            - "3306:3306"
+        volumes:
+            # папка с созданной БД
+            - ${PWD}/mysql/data:/var/lib/mysql
+        networks:
+            golovin:
+                aliases:
+                    - mysql_net
+
 #    ms:
 #        container_name: ms
 #        build: ./ms
@@ -141,12 +160,14 @@ services:
             - redis
             - mongo
             - neo4j
+            - mysql
 #            - ms
 #            - elastic
         links:
             - redis
             - mongo
             - neo4j
+            - mysql
 #            - ms
 #            - elastic
         networks:
