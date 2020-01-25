@@ -106,7 +106,7 @@ use classes\DB\DBredis;
           <form method="POST">
               <div>
                   <span><?= $workersRelation->values()[0]->name ?></span>
-                  <span> <?= array_search($workersRelation->values()[1]->type(), $relations) ?> </span>
+                  <span> --- <?= array_search($workersRelation->values()[1]->type(), $relations) ?> --▻ </span>
                   <span><?= $workersRelation->values()[2]->name ?></span>
                   <input type="hidden" name="from-id" value="<?= $workersRelation->values()[0]->id ?>">
                   <input type="hidden" name="to-id" value="<?= $workersRelation->values()[2]->id ?>">
